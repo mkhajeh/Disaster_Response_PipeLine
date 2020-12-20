@@ -4,7 +4,7 @@ import pandas as pd
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-
+from sklearn.base import BaseEstimator, TransformerMixin
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
@@ -14,35 +14,78 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 
-def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
 
+def tokenize(text):
+    '''
+    Process raw text message and make data ready for feature feature_extraction.
+    This function is completing PROCESSING PHASE of "NLP PIPELINE"
+
+    INPUT: raw text messages
+    OUTPUT: processed text message (ready for feature extraction)
+    '''
+    text=text.lower()
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text)
+    detected_urls = re.findall(url_regex, text)
+    for url in detected_urls:
+        text = text.replace(url, "urlplaceholder")
+    tokens = word_tokenize(text)
+    tokens = [w for w in tokens if w not in stopwords.words("english")]
+    #tokens=[PorterStemmer().stem(w) for w in tokens]
+    lemmatizer = WordNetLemmatizer()
     clean_tokens = []
     for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
+        clean_tok =  PorterStemmer().stem((((lemmatizer.lemmatize(tok, pos='v')).lower()).strip()))
         clean_tokens.append(clean_tok)
 
     return clean_tokens
 
+class MatchWord(BaseEstimator, TransformerMixin):
+    def match_word(self, text):
+
+        tokenized_text = tokenize(text)
+        labels = list(Y.columns)
+        for word in tokenized_text:
+            if word in labels:
+                return True
+        return False
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X_matched = pd.Series(X).apply(self.match_word)
+        return pd.DataFrame(X_matched)
+
+
+
 # load data
-engine = create_engine('sqlite:///../data/YourDatabaseName.db')
-df = pd.read_sql_table('YourTableName', engine)
+engine = create_engine('sqlite:///../data/DisasterResponse.db')
+df = pd.read_sql_table('disaster_response', engine)
 
 # load model
-model = joblib.load("../models/your_model_name.pkl")
+model = joblib.load("../models/classifier.pkl")
 
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    
+
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+
+    aid_related_counts= df.groupby('aid_related').count()['message']
+    aid_related_names = list(aid_related_counts.index)
+
+    medical_related_counts= df.groupby('medical_related').count()['message']
+    medical_related_names = list(medical_related_counts.index)
+
+
+    weather_related_counts= df.groupby('weather_related').count()['message']
+    weather_related_names = list(weather_related_counts.index)
+
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -65,11 +108,83 @@ def index():
             }
         }
     ]
-    
+
+
+
+
+
+
+    graphs = [
+        {
+            'data': [
+                Bar(
+                    x=aid_related_counts,
+                    y=aid_related_names
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Air_Related',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "aid_related"
+                }
+            }
+        }
+    ]
+
+
+
+    graphs = [
+        {
+            'data': [
+                Bar(
+                    x=weather_related_counts,
+                    y=weather_related_names
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Weather_Related',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Weather_related"
+                }
+            }
+        }
+    ]
+
+
+
+
+    graphs = [
+        {
+            'data': [
+                Bar(
+                    x=medical_related_counts,
+                    y=medical_related_names
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Medical_Related',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Medical_related"
+                }
+            }
+        }
+    ]
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
+
     # render web page with plotly graphs
     return render_template('master.html', ids=ids, graphJSON=graphJSON)
 
@@ -78,13 +193,13 @@ def index():
 @app.route('/go')
 def go():
     # save user input in query
-    query = request.args.get('query', '') 
+    query = request.args.get('query', '')
 
     # use model to predict classification for query
     classification_labels = model.predict([query])[0]
     classification_results = dict(zip(df.columns[4:], classification_labels))
 
-    # This will render the go.html Please see that file. 
+    # This will render the go.html Please see that file.
     return render_template(
         'go.html',
         query=query,

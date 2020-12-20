@@ -72,6 +72,9 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    '''
+    Saving data as a table in db to use in future modelling phase.
+    '''
 
     #save the cleaned dataframe into a db file
     #drop table if exists

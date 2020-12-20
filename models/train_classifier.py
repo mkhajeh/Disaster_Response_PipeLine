@@ -1,6 +1,7 @@
 #import libraries
 import sys
-import numpy as np
+import nltk
+nltk.download(['punkt','wordnet','averaged_perceptron_tagger','stopwords'])
 import pandas as pd
 import matplotlib.pyplot as plt
 import sqlite3
@@ -8,7 +9,6 @@ from sqlalchemy import create_engine
 from sklearn.datasets import make_multilabel_classification
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.neighbors import KNeighborsClassifier
-import nltk
 import re
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
@@ -43,6 +43,7 @@ def load_data(database_filepath):
 
         #engine = create_engine('sqlite:///{}'.format(database_filepath))
         #df = pd.read_sql("SELECT * FROM disaster_response", engine)
+    global Y # As I need to use Y in my CLASS later on in this script.
     db = sqlite3.connect(database_filepath)
     cursor = db.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
@@ -90,6 +91,13 @@ def tokenize(text):
     return clean_tokens
 
 class MatchWord(BaseEstimator, TransformerMixin):
+    '''
+    This is another feature extraction in addition to tfidf transformer that
+    I will consider in my modelling.
+
+    INPUT: lables name
+    OUTPUT: is the binary format for each tocken (0 if it is not matched and 1 if it is matched)
+    '''
     def match_word(self, text):
 
         tokenized_text = tokenize(text)
@@ -130,11 +138,12 @@ def build_model():
     ])
     parameters = {
         'clf__estimator__n_neighbors': [5,10],
-        #'clf__estimator__weights' : ['uniform', 'distance'],
-        #'tfidf__smooth_idf': (True, False)
+        #'clf__estimator__weights' : {'uniform', 'distance'},
+        'tfidf__smooth_idf': [True, False]
     }
     cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
+
 
 
 
@@ -166,7 +175,10 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    #joblib.dump(model.best_estimator_, model_filepath)
+    '''
+    Saving data in picke format.
+    '''
+
     pickle.dump(model,open(model_filepath,'wb'))
 
 
