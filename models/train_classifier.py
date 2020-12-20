@@ -126,17 +126,15 @@ def build_model():
             ('match_word', MatchWord())
         ])),
 
-        ('clf',MultiOutputClassifier(RandomForestClassifier()))
+        ('clf',MultiOutputClassifier(KNeighborsClassifier()))
     ])
     parameters = {
-        #'n_neighbors': [5,10],
-        #'weights' : ['uniform', 'distance'],
-        #'tfidf__use_idf': (True, False)
-        clf_min_samples_split: [2, 4, 6]
+        'clf__estimator__n_neighbors': [5,10],
+        'clf__estimator__weights' : ['uniform', 'distance'],
+        'tfidf__smooth_idf': (True, False)
     }
     cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
-
 
 
 
