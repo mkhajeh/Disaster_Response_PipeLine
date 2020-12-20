@@ -93,7 +93,7 @@ class MatchWord(BaseEstimator, TransformerMixin):
     def match_word(self, text):
 
         tokenized_text = tokenize(text)
-        labels = list((df.drop(['id','message','original','genre'],axis=1)).columns)
+        labels = list(Y.columns)
         for word in tokenized_text:
             if word in labels:
                 return True
@@ -130,8 +130,8 @@ def build_model():
     ])
     parameters = {
         'clf__estimator__n_neighbors': [5,10],
-        'clf__estimator__weights' : ['uniform', 'distance'],
-        'tfidf__smooth_idf': (True, False)
+        #'clf__estimator__weights' : ['uniform', 'distance'],
+        #'tfidf__smooth_idf': (True, False)
     }
     cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
