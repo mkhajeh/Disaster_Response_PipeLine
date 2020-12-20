@@ -3,10 +3,11 @@
 1. [Installation](#installation)
 2. [Project Motivation](#motivation)
 3. [File Descriptions](#files)
-4. [Results](#results)
-5. [Contributors](#Contributors)
-6. [Licensing & Copyright](#licensing)
-7. [Acknowledgements](#Acknowledgements)
+4. [Run the web app](#run)
+5. [Results](#results)
+6. [Contributors](#Contributors)
+7. [Licensing & Copyright](#licensing)
+8. [Acknowledgements](#Acknowledgements)
 ---
 ## Installation<a name="installation"></a>
 Here is the list of main libraries that I have used for this project:
@@ -33,7 +34,15 @@ There are two initial **csv** files available for this project:
 * disaster_categoris.csv
 * disaster_messages.csv
 
-in the first part of this project ETL pipeline has been implemented to Extract, Transfer and Load data (in SQL data base). the full description of steps and all codes/functions written for this phase has been summarized in **process_data.py**. in the second phase NLP and ML pipelines has been implemented for modelling. full description of this phase has been summarized in **train_classifier.py**. At the end the project was deployed in web app using FLASK and plotly
+in the first part of this project ETL pipeline has been implemented to Extract, Transfer and Load data (in SQL data base). the full description of steps and all codes/functions written for this phase has been summarized in **process_data.py**. in the second phase NLP and ML pipelines has been implemented for modelling. full description of this phase has been summarized in **train_classifier.py**. At the end the project was deployed in web app using FLASK and plotly.
+
+## Run the web app <a name="run"></a>
+First make sure you have installed FLAST and Plotly. in your terminal navigate to the folder which includes **run.py** file. then in terminal write `python run.py`
+in separate terminal type `env|grep WORK`. The output of this command is the SPACEID.
+
+In final step, open new web browser and type the following:
+https://SPACEID-3001.SPACEDOMAIN and instead of SPACEID write what you have gotten from `env|grep WORK`
+
 
 ---
 ## Results <a name="results"></a>

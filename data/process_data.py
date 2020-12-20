@@ -14,8 +14,8 @@ def load_data(messages_filepath, categories_filepath):
     OUTPUT: df (which is the merge of two input files)
     """
 
-    messages=pd.read_csv('disaster_messages.csv')
-    categories=pd.read_csv('disaster_categories.csv')
+    messages=pd.read_csv(messages_filepath)
+    categories=pd.read_csv(categories_filepath)
     df = pd.merge(messages,categories, on='id')
     #just to check the first 5 lines of output
     print(df.head())

@@ -76,15 +76,15 @@ def index():
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
 
-    aid_related_counts= df.groupby('aid_related').count()['message']
-    aid_related_names = list(aid_related_counts.index)
+    floods_counts= df.groupby('floods').count()['message']
+    floods_names = list(floods_counts.index)
 
-    medical_related_counts= df.groupby('medical_related').count()['message']
-    medical_related_names = list(medical_related_counts.index)
+    fire_counts= df.groupby('fire').count()['message']
+    fire_names = list(fire_counts.index)
 
 
-    weather_related_counts= df.groupby('weather_related').count()['message']
-    weather_related_names = list(weather_related_counts.index)
+    cold_counts= df.groupby('cold').count()['message']
+    cold_names = list(cold_counts.index)
 
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -118,8 +118,8 @@ def index():
         {
             'data': [
                 Bar(
-                    x=aid_related_counts,
-                    y=aid_related_names
+                    x=floods_counts,
+                    y=floods_names
                 )
             ],
 
@@ -129,7 +129,7 @@ def index():
                     'title': "Count"
                 },
                 'xaxis': {
-                    'title': "aid_related"
+                    'title': "floods"
                 }
             }
         }
@@ -141,18 +141,18 @@ def index():
         {
             'data': [
                 Bar(
-                    x=weather_related_counts,
-                    y=weather_related_names
+                    x=cold_counts,
+                    y=cold_names
                 )
             ],
 
             'layout': {
-                'title': 'Distribution of Message Weather_Related',
+                'title': 'Distribution of Message cold',
                 'yaxis': {
                     'title': "Count"
                 },
                 'xaxis': {
-                    'title': "Weather_related"
+                    'title': "cold"
                 }
             }
         }
@@ -165,18 +165,18 @@ def index():
         {
             'data': [
                 Bar(
-                    x=medical_related_counts,
-                    y=medical_related_names
+                    x=fire_counts,
+                    y=fire_names
                 )
             ],
 
             'layout': {
-                'title': 'Distribution of Message Medical_Related',
+                'title': 'Distribution of Message fire',
                 'yaxis': {
                     'title': "Count"
                 },
                 'xaxis': {
-                    'title': "Medical_related"
+                    'title': "fire"
                 }
             }
         }
