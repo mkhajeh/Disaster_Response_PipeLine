@@ -27,6 +27,8 @@ from sklearn.svm import SVC
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
+import pickle
+
 
 def load_data(database_filepath):
 
@@ -38,25 +40,28 @@ def load_data(database_filepath):
     OUTPUT: features (X), labels (Y)
 
     '''
-    def load_data(database_filepath):
+
         #engine = create_engine('sqlite:///{}'.format(database_filepath))
         #df = pd.read_sql("SELECT * FROM disaster_response", engine)
-        db = sqlite3.connect('data/DisasterResponse.db')
-        cursor = db.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = cursor.fetchall()[0][0]
-        df = pd.read_sql_query('SELECT * FROM '+tables,db)
+    db = sqlite3.connect(database_filepath)
+    cursor = db.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()[0][0]
+    df = pd.read_sql_query('SELECT * FROM '+tables,db)
 
-        #print(df)
+    #print(df)
 
 
 
-        #just to make sure the function is working properly
-        print(df.head())
-        X = df['message']
-        Y = df.drop(['id','message','original','genre'],axis=1)
-        category_names=list(Y.columns)
-        return X,Y,category_names
+    #just to make sure the function is working properly
+    print(df.head())
+    X = df['message']
+    Y = df.drop(['id','message','original','genre'],axis=1)
+    category_names=list(Y.columns)
+    print(X)
+    print(Y)
+    print(category_names)
+    return X,Y,category_names
 
 
 url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
@@ -84,13 +89,30 @@ def tokenize(text):
 
     return clean_tokens
 
+class MatchWord(BaseEstimator, TransformerMixin):
+    def match_word(self, text):
+
+        tokenized_text = tokenize(text)
+        labels = list((df.drop(['id','message','original','genre'],axis=1)).columns)
+        for word in tokenized_text:
+            if word in labels:
+                return True
+        return False
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X_matched = pd.Series(X).apply(self.match_word)
+        return pd.DataFrame(X_matched)
 
 
-def build_model(X,Y):
+
+def build_model():
     '''
     implement ML pipeline and optimize parameters using Grid Search Algorithms
 
-    INPUT: X(features) and Y(labels) created in previous function
+
     OUTPUT: The model and the optimized parameters
     '''
     pipeline = Pipeline([
@@ -104,12 +126,13 @@ def build_model(X,Y):
             ('match_word', MatchWord())
         ])),
 
-        ('clf',MultiOutputClassifier(KNeighborsClassifier()))
+        ('clf',MultiOutputClassifier(RandomForestClassifier()))
     ])
     parameters = {
-        'n_neighbors': [5,10],
-        'weights' : ['uniform', 'distance'],
-        'tfidf__use_idf': (True, False)
+        #'n_neighbors': [5,10],
+        #'weights' : ['uniform', 'distance'],
+        #'tfidf__use_idf': (True, False)
+        clf_min_samples_split: [2, 4, 6]
     }
     cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
@@ -145,7 +168,8 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    joblib.dump(model.best_estimator_, model_filepath)
+    #joblib.dump(model.best_estimator_, model_filepath)
+    pickle.dump(model,open(model_filepath,'wb'))
 
 
 def main():
