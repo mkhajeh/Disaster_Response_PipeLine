@@ -62,7 +62,9 @@ This project has three main parts:
   https://SPACEID-3001.SPACEDOMAIN and instead of SPACEID write what you have gotten from `env|grep WORK`
 ---
 ## Results <a name="results"></a>
-The final outcome of this project was a dashboard developed in FLASK to show the plots of distribution of each of labels considered in this project (in total there are 36 lables but here only 4 of them will be displayed.)
+
+ The final outcome of this project was a dashboard developed in FLASK to show the plots of distribution of each of labels considered in this project (in total there are 36 lables but here only 4 of them will be displayed.)
+ 
 ---
 ## Contributors <a name="Contributors"></a>
 Mehdi Khajeh
