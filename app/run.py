@@ -1,7 +1,7 @@
 import json
 import plotly
 import pandas as pd
-
+import re
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from sklearn.base import BaseEstimator, TransformerMixin
