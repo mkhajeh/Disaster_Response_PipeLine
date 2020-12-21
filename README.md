@@ -51,7 +51,7 @@ This project has three main parts:
 
 - **Part 2: NLP and ML pipelines**
 
-  in the second phase, NLP (for further cleaning of text messages and extraction of features from each text message) and ML pipeline (for modelling) have been implemented on the output data coming from phase one. All the codes with detailed explanation of each part of of the code has been summarized in **models/train_classifier.py** of this repository
+  in the second phase, NLP (for further cleaning of text messages and extraction of features from each text message) and ML pipeline (for modelling) have been implemented on the output data coming from phase one. All the codes with detailed explanation of each part of of the code has been summarized in **models/train_classifier.py** of this repository. The output of this part is a pickle file used for web app in phase 3.
 
 - **Part 3: Visualization of the outcome via web app**
 

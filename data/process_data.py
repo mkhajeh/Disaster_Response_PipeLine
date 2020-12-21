@@ -61,8 +61,10 @@ def clean_data(df):
     print(df.head())
     # concatenate the original dataframe with the new `categories` dataframe
     df = pd.concat([df,categories],axis=1)
+    #replce value of 2 with 1 in 'related' column:
+    df['related'].replace({2 : 1})
     # check number of duplicates
-    df.duplicated().sum()
+    print(df.duplicated().sum())
     # drop duplicates
     df.drop_duplicates(inplace=True)
     return df
@@ -81,7 +83,7 @@ def save_data(df, database_filename):
     dbpath = 'sqlite:///{}'.format(database_filename)
     table = 'disaster_response'
     engine = create_engine(dbpath)
-    df.to_sql(table, engine, index=False)
+    df.to_sql(table, engine, if_exists='replace',index=False)
 
 
 
